@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎧 Naxi Radio - Shared Control</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #00ffcc;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00ffcc88;
+    }
+
+    .dashboard {
+      background: #1f1f1f;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #00ffcc44;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    select, button, input[type=range] {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: none;
+      background-color: #2b2b2b;
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    button:hover, select:hover, input[type=range]:hover {
+      background-color: #3b3b3b;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .host-indicator {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #00ffcc;
+      text-shadow: 0 0 5px #00ffcc;
+    }
+
+    audio {
+      margin-top: 20px;
+    }
+
+    ul#userList {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      background: #141414;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      padding: 15px;
+    }
+
+    ul#userList li {
+      margin: 5px 0;
+      border-bottom: 1px solid #333;
+      padding: 5px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    ul#userList li:last-child {
+      border-bottom: none;
+    }
+
+    .user-host {
+      color: #00ffcc;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px 18px;
+        border-radius: 8px;
+        border: none;
+        background-color: #2b2b2b;
+        color: #fff;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+      
+  </style>
+</head>
+<body>
+  <h1>🎧 Naxi Radio - Shared Control</h1>
+
+  <div class="dashboard">
+    <select id="stationSelect" onchange="changeStation(this.value)">
+        <option value="https://naxidigital-house128ssl.streaming.rs:8002/;stream.nsv">Naxi House</option>
+        <option value="https://naxidigital-cafe128ssl.streaming.rs:8022/;stream.nsv">Naxi Cafe</option>
+        <option value="https://naxidigital-exyu128ssl.streaming.rs:8242/;stream.nsv">Naxi EX-YU</option>
+    </select>
+
+    <input type="text" id="newStationName" placeholder="Station Name" />
+    <input type="text" id="newStationURL" placeholder="Stream URL" />
+    <button onclick="addCustomStation()">➕ Add Station</button>
+
+
+    <button onclick="sendControl('play')">▶️ Play</button>
+    <button onclick="sendControl('pause')">⏸ Pause</button>
+    <button onclick="toggleMute()">🔇 Mute / Unmute</button>
+
+    <input type="range" min="0" max="1" step="0.01" value="1" onchange="sendVolume(this.value)">
+
+    <button onclick="requestHost()">Request Host Role</button>
+
+    <div class="host-indicator" id="hostStatus">Not Host</div>
+  </div>
+
+  <audio id="radio" controls autoplay style="display: none;"></audio>
+
+  <ul id="userList"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const audio = document.getElementById("radio");
+    const requestBtn = document.querySelector("button[onclick='requestHost()']");
+
+    const stationSelect = document.getElementById("stationSelect");
+    const userList = document.getElementById("userList");
+
+    let isHost = false;
+    let isMuted = false;
+    let lastVolume = 1;
+    let socketId = null;
+
+    function sendControl(action) {
+      if (action === "volume") {
+        socket.emit("radio-control", { action: "volume", value: audio.volume });
+      } else {
+        socket.emit("radio-control", { action });
+      }
+    }
+
+    function sendVolume(val) {
+      const volume = parseFloat(val);
+      if (isHost) audio.volume = volume;
+      socket.emit("radio-control", { action: "volume", value: volume });
+    }
+
+    function changeStation(url) {
+      socket.emit("radio-control", { action: "station", value: url });
+    }
+
+    function toggleMute() {
+        
+      
+        isMuted = !isMuted;
+      
+        if (isMuted) {
+          lastVolume = audio.volume || 1;
+          audio.volume = 0;
+        } else {
+          audio.volume = lastVolume;
+        }
+      
+        // Update slider to match new volume
+        document.querySelector('input[type="range"]').value = audio.volume;
+      
+        sendVolume(audio.volume);
+      }
+      
+    function requestHost() {
+      socket.emit("request-host");
+    }
+
+    function addCustomStation() {
+        const name = document.getElementById("newStationName").value.trim();
+        const url = document.getElementById("newStationURL").value.trim();
+      
+        if (!name || !url) {
+          alert("Please enter both station name and URL.");
+          return;
+        }
+      
+        // Save locally
+        const customStations = JSON.parse(localStorage.getItem("customStations") || "[]");
+        customStations.push({ name, url });
+        localStorage.setItem("customStations", JSON.stringify(customStations));
+      
+        // Share with others
+        socket.emit("add-custom-station", { name, url });
+      
+        addStationToSelect({ name, url });
+        stationSelect.value = url;
+        changeStation(url);
+      
+        document.getElementById("newStationName").value = "";
+        document.getElementById("newStationURL").value = "";
+      }
+      
+      function addStationToSelect({ name, url }) {
+        // Prevent duplicates
+        const exists = Array.from(stationSelect.options).some(opt => opt.value === url);
+        if (exists) return;
+      
+        const option = document.createElement("option");
+        option.value = url;
+        option.textContent = name;
+        stationSelect.appendChild(option);
+      }
+      
+      function loadCustomStations() {
+        const customStations = JSON.parse(localStorage.getItem("customStations") || "[]");
+        customStations.forEach(addStationToSelect);
+      }
+      
+      loadCustomStations();
+      
+      socket.on("add-custom-station", (station) => {
+        // Only add to localStorage if it's not already there
+        const customStations = JSON.parse(localStorage.getItem("customStations") || "[]");
+        const exists = customStations.some(s => s.url === station.url);
+        if (!exists) {
+          customStations.push(station);
+          localStorage.setItem("customStations", JSON.stringify(customStations));
+        }
+        addStationToSelect(station);
+      });
+      
+
+    socket.on("set-as-host", () => {
+        isHost = true;
+        hostStatus.textContent = "🎧 You are the Host";
+        audio.style.display = "block";
+        audio.src = stationSelect.value;
+        audio.play();
+        requestBtn.disabled = true;
+        requestBtn.textContent = "You are the Host";
+      });
+      
+
+    socket.on("host-request", (requestingId) => {
+      if (confirm(`User ${requestingId.slice(0, 4)} wants to become host. Approve?`)) {
+        socket.emit("approve-host-transfer", requestingId);
+      }
+    });
+
+    socket.on("radio-control", ({ action, value }) => {
+      if (!isHost) return;
+      if (action === "play") audio.play();
+      else if (action === "pause") audio.pause();
+      else if (action === "volume") {
+        audio.volume = value;
+        document.querySelector('input[type="range"]').value = value;
+      }
+      else if (action === "station") {
+        audio.src = value;
+        audio.play();
+        stationSelect.value = value;
+      }
+    });
+
+    socket.on("volume-sync", (vol) => {
+        if (!isHost) {
+            audio.volume = vol;
+            document.querySelector('input[type="range"]').value = vol;
+          }
+    });
+
+    socket.on("station-sync", (url) => {
+      if (!isHost) {
+        audio.src = url;
+        audio.play();
+        stationSelect.value = url;
+      }
+    });
+
+    socket.on("user-list", ({ users, hostId }) => {
+      userList.innerHTML = `<strong>Connected Users:</strong>`;
+      users.forEach(user => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${user.name}</span>
+          <span class="${user.id === hostId ? 'user-host' : ''}">
+            ${user.id === hostId ? "👑 Host" : ""}
+          </span>`;
+        userList.appendChild(li);
+        if (socket.id === user.id) socketId = user.id;
+      });
+
+      if (socketId === hostId && !isHost) {
+        isHost = true;
+        hostStatus.textContent = "🎧 You are the Host";
+        audio.style.display = "block";
+        requestBtn.disabled = true;
+        requestBtn.textContent = "You are the Host";
+      } else if (socketId !== hostId && isHost) {
+        isHost = false;
+        hostStatus.textContent = "Not Host";
+        audio.style.display = "none";
+        requestBtn.disabled = false;
+        requestBtn.textContent = "Request Host Role";
+      }
+      
+
+      if (socketId !== hostId && isHost) {
+        isHost = false;
+        hostStatus.textContent = "Not Host";
+        audio.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
