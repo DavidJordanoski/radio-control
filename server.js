@@ -4,7 +4,7 @@ const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http, {
   cors: {
-    origin: "*", // For now; restrict later
+    origin: "*", // For now; restrict later.
     methods: ["GET", "POST"]
   }
 });
@@ -93,6 +93,6 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
