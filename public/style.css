@@ -37,7 +37,7 @@ body {
     font-size: 42px;
     font-weight: bold;
     background: linear-gradient(to right, #4afaff, #c792ff);
-    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 25px;
     text-align: center;

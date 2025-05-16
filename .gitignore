@@ -1,0 +1,12 @@
+# Node.js
+node_modules/
+.env
+.DS_Store
+npm-debug.log
+.env.local
+.cache/
+dist/
+*.log
+
+# Render deploy info
+render.yaml

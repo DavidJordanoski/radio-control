@@ -1,10 +1,13 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-
+const express = require('express');
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const http = require('http').createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(http, {
+  cors: {
+    origin: "*", // For now; restrict later
+    methods: ["GET", "POST"]
+  }
+});
 
 app.use(express.static("public"));
 
