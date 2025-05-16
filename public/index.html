@@ -2,137 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🎧 Naxi Radio - Shared Control</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-      color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: start;
-      min-height: 100vh;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      color: #00ffcc;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px #00ffcc88;
-    }
-
-    .dashboard {
-      background: #1f1f1f;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px #00ffcc44;
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-
-    select, button, input[type=range], input[type=text] {
-      width: 100%;
-      max-width: 400px;
-      padding: 12px 18px;
-      border-radius: 8px;
-      border: none;
-      background-color: #2b2b2b;
-      color: #fff;
-      font-size: 16px;
-      transition: all 0.2s ease;
-    }
-
-    button:hover, select:hover, input[type=range]:hover, input[type=text]:hover {
-      background-color: #3b3b3b;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    .host-indicator {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #00ffcc;
-      text-shadow: 0 0 5px #00ffcc;
-    }
-
-    audio {
-      margin-top: 20px;
-    }
-
-    ul#userList {
-      list-style: none;
-      padding: 0;
-      margin-top: 20px;
-      background: #141414;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 100%;
-      padding: 15px;
-    }
-
-    ul#userList li {
-      margin: 5px 0;
-      border-bottom: 1px solid #333;
-      padding: 5px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    ul#userList li:last-child {
-      border-bottom: none;
-    }
-
-    .user-host {
-      color: #00ffcc;
-      font-weight: bold;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Naxi Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
 </head>
 <body>
-  <h1>🎧 Naxi Radio - Shared Control</h1>
-  <div class="dashboard">
-    <select id="stationSelect" onchange="changeStation(this.value)">
-      <option value="https://naxidigital-house128ssl.streaming.rs:8002/;stream.nsv">Naxi House</option>
-      <option value="https://naxidigital-cafe128ssl.streaming.rs:8022/;stream.nsv">Naxi Cafe</option>
-      <option value="https://naxidigital-exyu128ssl.streaming.rs:8242/;stream.nsv">Naxi EX-YU</option>
-    </select>
-    <input type="text" id="newStationName" placeholder="Station Name" />
-    <input type="text" id="newStationURL" placeholder="Stream URL" />
-    <button onclick="addCustomStation()">➕ Add Station</button>
-    <button onclick="sendControl('play')">▶️ Play</button>
-    <button onclick="sendControl('pause')">⏸ Pause</button>
-    <button onclick="toggleMute()">🔇 Mute / Unmute</button>
-    <input type="range" min="0" max="1" step="0.01" value="1" onchange="sendVolume(this.value)">
-    <button onclick="requestHost()">Request Host Role</button>
-    <div class="host-indicator" id="hostStatus">Not Host</div>
+  <div class="container">
+    <div class="card">
+      <h1 class="title">🎧 Naxi Radio –<br/>Shared Control</h1>
+      <div class="form">
+        <select class="input" id="stationSelect" onchange="changeStation(this.value)">
+          <option value="https://naxidigital-house128ssl.streaming.rs:8002/;stream.nsv">Naxi House</option>
+          <option value="https://naxidigital-cafe128ssl.streaming.rs:8022/;stream.nsv">Naxi Cafe</option>
+          <option value="https://naxidigital-exyu128ssl.streaming.rs:8242/;stream.nsv">Naxi EX-YU</option>
+        </select>
+        <input type="text" id="newStationName" class="input" placeholder="Station Name" />
+        <input type="text" id="newStationURL" class="input" placeholder="Stream URL" />
+
+        <div class="button-row">
+          <button class="btn gradient-purple" onclick="sendControl('pause')">⏸ Pause</button>
+          <button class="btn gradient-orange" onclick="sendControl('play')">▶️ Play</button>
+        </div>
+        <div class="button-row">
+          <button class="btn gradient-pink" onclick="addCustomStation()">➕ Add Station</button>
+          <button class="btn gradient-blue" onclick="toggleMute()">🔇 Mute / Unmute</button>
+        </div>
+        <input type="range" min="0" max="1" step="0.01" value="1" onchange="sendVolume(this.value)">
+        <div class="button-row">
+          <button class="btn gradient-purple" onclick="requestHost()" id="requestBtn">Request Host Role</button>
+        </div>
+        <p class="host-status" id="hostStatus">Not Host</p>
+      </div>
+    </div>
+
+    <div class="card users">
+        <p class="connected-title">Connected Users:</p>
+        <ul id="userList" class="user-list"></ul>
+      </div>
   </div>
 
-  <audio id="radio" controls autoplay style="display: none;"></audio>
-
-  <ul id="userList"></ul>
+  <audio id="radio" controls autoplay></audio>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
     const audio = document.getElementById("radio");
-    const requestBtn = document.querySelector("button[onclick='requestHost()']");
+    const requestBtn = document.getElementById("requestBtn");
     const stationSelect = document.getElementById("stationSelect");
     const userList = document.getElementById("userList");
-
     let isHost = false;
     let isMuted = false;
     let lastVolume = 1;
@@ -175,21 +94,17 @@
     function addCustomStation() {
       const name = document.getElementById("newStationName").value.trim();
       const url = document.getElementById("newStationURL").value.trim();
-
       if (!name || !url) {
         alert("Please enter both station name and URL.");
         return;
       }
-
       const customStations = JSON.parse(localStorage.getItem("customStations") || "[]");
       customStations.push({ name, url });
       localStorage.setItem("customStations", JSON.stringify(customStations));
       socket.emit("add-custom-station", { name, url });
-
       addStationToSelect({ name, url });
       stationSelect.value = url;
       changeStation(url);
-
       document.getElementById("newStationName").value = "";
       document.getElementById("newStationURL").value = "";
     }
@@ -212,8 +127,7 @@
 
     socket.on("add-custom-station", (station) => {
       const customStations = JSON.parse(localStorage.getItem("customStations") || "[]");
-      const exists = customStations.some(s => s.url === station.url);
-      if (!exists) {
+      if (!customStations.some(s => s.url === station.url)) {
         customStations.push(station);
         localStorage.setItem("customStations", JSON.stringify(customStations));
       }
@@ -222,7 +136,7 @@
 
     socket.on("set-as-host", () => {
       isHost = true;
-      hostStatus.textContent = "🎧 You are the Host";
+      document.getElementById("hostStatus").textContent = "🎧 You are the Host";
       audio.style.display = "block";
       audio.src = stationSelect.value;
       audio.play();
@@ -251,39 +165,31 @@
     });
 
     socket.on("volume-sync", (vol) => {
-      if (!isHost) {
-        document.querySelector('input[type="range"]').value = vol;
-      }
+      if (!isHost) document.querySelector('input[type="range"]').value = vol;
     });
 
     socket.on("station-sync", (url) => {
-      if (!isHost) {
-        stationSelect.value = url;
-      }
+      if (!isHost) stationSelect.value = url;
     });
 
     socket.on("user-list", ({ users, hostId }) => {
-      userList.innerHTML = `<strong>Connected Users:</strong>`;
+      userList.innerHTML = "";
       users.forEach(user => {
         const li = document.createElement("li");
-        li.innerHTML = `
-          <span>${user.name}</span>
-          <span class="${user.id === hostId ? 'user-host' : ''}">
-            ${user.id === hostId ? "👑 Host" : ""}
-          </span>`;
+        li.className = "user";
+        li.innerHTML = `<span>${user.id === hostId ? "👑" : "👤"}</span> ${user.name}`;
         userList.appendChild(li);
         if (socket.id === user.id) socketId = user.id;
       });
-
       if (socketId === hostId && !isHost) {
         isHost = true;
-        hostStatus.textContent = "🎧 You are the Host";
+        document.getElementById("hostStatus").textContent = "🎧 You are the Host";
         audio.style.display = "block";
         requestBtn.disabled = true;
         requestBtn.textContent = "You are the Host";
       } else if (socketId !== hostId && isHost) {
         isHost = false;
-        hostStatus.textContent = "Not Host";
+        document.getElementById("hostStatus").textContent = "Not Host";
         audio.style.display = "none";
         requestBtn.disabled = false;
         requestBtn.textContent = "Request Host Role";

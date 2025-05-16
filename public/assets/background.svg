@@ -1,0 +1,57 @@
+<svg width="100%" height="100%" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <!-- Neon gradient -->
+    <linearGradient id="neon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00fff7" stop-opacity="0.1" />
+      <stop offset="30%" stop-color="#00fff7" stop-opacity="0.6" />
+      <stop offset="60%" stop-color="#c084fc" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#ff1d58" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Glow effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background base -->
+  <rect width="100%" height="100%" fill="#0c0c15"/>
+
+  <!-- Curved neon paths -->
+  <path d="M 0 300 Q 200 100 400 300 T 800 300"
+        stroke="url(#neon-gradient)"
+        stroke-width="3"
+        fill="none"
+        filter="url(#glow)" />
+
+  <path d="M 0 380 Q 200 200 400 380 T 800 380"
+        stroke="url(#neon-gradient)"
+        stroke-width="2"
+        fill="none"
+        filter="url(#glow)" />
+
+  <path d="M 0 460 Q 200 300 400 460 T 800 460"
+        stroke="url(#neon-gradient)"
+        stroke-width="2.5"
+        fill="none"
+        filter="url(#glow)" />
+
+  <!-- Fade tail curves with lower opacity and blur -->
+  <path d="M 0 340 Q 300 180 600 340 T 800 340"
+        stroke="url(#neon-gradient)"
+        stroke-width="1.5"
+        fill="none"
+        opacity="0.3"
+        filter="url(#glow)" />
+
+  <path d="M 0 420 Q 300 260 600 420 T 800 420"
+        stroke="url(#neon-gradient)"
+        stroke-width="1.2"
+        fill="none"
+        opacity="0.2"
+        filter="url(#glow)" />
+</svg>

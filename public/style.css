@@ -1,50 +1,153 @@
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f2f2f2;
+    background: 
+      url('assets/background.svg') no-repeat center center fixed,
+      #0c0c15; /* fallback background color */
+    background-size: cover;
     margin: 0;
-    padding: 0;
-    color: #333;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  }
-  
-  h1, h2, h3 {
-    text-align: center;
-  }
-  
-  .video-section, .audio-section {
-    margin: 2rem 0;
-    text-align: center;
-  }
-  
-  .start-btn {
-    display: block;
-    margin: 2rem auto;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .start-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .volume-controls {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
     display: flex;
     justify-content: center;
+    padding: 40px;
+  }
+  
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .card {
+    background: rgba(20, 20, 30, 0.6);
+    position: relative;
+    
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, #ff4e50, #ff9a9e, #c084fc, #82eefd, #ff4e50);
+    background-size: 300% 300%;
+    animation: borderGlow 6s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  @keyframes borderGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .title {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(to right, #4afaff, #c792ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  .form input,
+  .form select {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #1e1e2f;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .button-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  
+  .btn:hover {
+    opacity: 0.85;
+  }
+  
+  .gradient-purple { background: linear-gradient(90deg, #4b00ff, #b72cff); }
+  .gradient-orange { background: linear-gradient(90deg, #ff5e3a, #ff2a68); }
+  .gradient-pink { background: linear-gradient(90deg, #ff1d58, #f75990); }
+  .gradient-blue { background: linear-gradient(90deg, #1de9b6, #1dc4e9); }
+  
+  input[type=range] {
+    width: 100%;
+    margin: 15px 0;
+    accent-color: #c792ff;
+  }
+  
+  .host-status {
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  .connected-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    text-align: center;
+  }
+  
+  .user-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+  }
+  
+  .user-list li {
+    background: #1b1b2b;
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: 10px;
+    font-size: 16px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  audio {
+    display: none;
   }
   
