@@ -39,7 +39,7 @@ body {
     right: 0;
     bottom: 0;
     border-radius: 20px;
-    padding: 1px;
+    padding: 2px;
     background: linear-gradient(135deg, #ff4e50, #ff9a9e, #c084fc, #82eefd, #ff4e50);
     background-size: 300% 300%;
     animation: borderGlow 6s linear infinite;
@@ -57,7 +57,7 @@ body {
   }
   
   .title {
-    font-size: 32px;
+    font-size: 42px;
     font-weight: bold;
     background: linear-gradient(to right, #4afaff, #c792ff);
     -webkit-background-clip: text;
